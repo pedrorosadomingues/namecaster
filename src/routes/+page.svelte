@@ -88,21 +88,27 @@
 		width: 100%;
 		transition: border-color 0.3s;
 		background-color: #ff2f2f;
+		text-align: center;
 	}
 
 	input::placeholder {
 		color: black;
+		opacity: 0.7;
+		font-style: italic;
+		text-align: center;
 	}
 
 	input:focus {
 		border-color: #0077ff;
 		outline: none;
 		border-width: 3px;
+		caret-color: transparent;
 	}
 
 	p {
 		margin-top: 1.5rem;
 		font-size: 1.2rem;
+		color: #333;
 	}
 
 	h1 {

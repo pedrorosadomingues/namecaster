@@ -1,13 +1,19 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { get } from 'svelte/store';
+	import { fly } from 'svelte/transition';
 
 	export let data;
 
-	let nameInput = data.name || '';
+	let nameInput = '';
 	let debounceTimer;
+
+	function capitalize(str) {
+		if (!str) return '';
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
 
 	function handleInput(event) {
 		const target = event.target;
@@ -33,6 +39,14 @@
 		}, 700);
 	}
 
+	onMount(() => {
+		const params = get(page).url.searchParams;
+		if (params.has('name')) {
+			goto('/', { replaceState: true });
+		}
+		nameInput = '';
+	});
+
 	onDestroy(() => {
 		if (debounceTimer) clearTimeout(debounceTimer);
 	});
@@ -47,11 +61,14 @@
 		placeholder="Digite um nome..."
 		autocomplete="off"
 	/>
-
-	{#if data.name && data.age !== null}
-		<p>A idade estimada para <strong>{data.name}</strong> é <strong>{data.age}</strong> anos.</p>
-	{:else if data.name}
-		<p>Não foi possível estimar a idade para <strong>{data.name}</strong>.</p>
+	{#if nameInput.trim() !== '' && data.name && data.age !== null}
+		<p transition:fly={{ x: -60, duration: 800 }}>
+			A idade estimada para <strong>{capitalize(data.name)}</strong> é <strong>{data.age}</strong> anos.
+		</p>
+	{:else if nameInput.trim() !== '' && data.name}
+		<p transition:fly={{ x: -60, duration: 800 }}>
+			Não foi possível estimar a idade para <strong>{capitalize(data.name)}</strong>.
+		</p>
 	{/if}
 </main>
 
@@ -66,19 +83,32 @@
 	input {
 		padding: 0.75rem 1rem;
 		font-size: 1rem;
-		border: 2px solid #aaa;
+		border: 2px solid black;
 		border-radius: 8px;
 		width: 100%;
 		transition: border-color 0.3s;
+		background-color: #ff2f2f;
+	}
+
+	input::placeholder {
+		color: black;
 	}
 
 	input:focus {
 		border-color: #0077ff;
 		outline: none;
+		border-width: 3px;
 	}
 
 	p {
 		margin-top: 1.5rem;
 		font-size: 1.2rem;
+	}
+
+	h1 {
+		font-size: 2rem;
+		margin-bottom: 1.5rem;
+		color: #333;
+		font-style: italic;
 	}
 </style>

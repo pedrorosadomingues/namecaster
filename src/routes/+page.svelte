@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { get } from 'svelte/store';
 	import { fly } from 'svelte/transition';
 
@@ -39,17 +39,10 @@
 		}, 700);
 	}
 
-	onMount(() => {
-		const params = get(page).url.searchParams;
-		if (params.has('name')) {
-			goto('/', { replaceState: true });
-		}
-		nameInput = '';
-	});
-
 	onDestroy(() => {
 		if (debounceTimer) clearTimeout(debounceTimer);
 	});
+
 </script>
 
 <main>
@@ -61,11 +54,11 @@
 		placeholder="Digite um nome..."
 		autocomplete="off"
 	/>
-	{#if nameInput.trim() !== '' && data.name && data.age !== null}
+	{#if data.name && data.age !== null && data.name !== ''}
 		<p transition:fly={{ x: -60, duration: 800 }}>
 			A idade estimada para <strong>{capitalize(data.name)}</strong> é <strong>{data.age}</strong> anos.
 		</p>
-	{:else if nameInput.trim() !== '' && data.name}
+	{:else if data.name}
 		<p transition:fly={{ x: -60, duration: 800 }}>
 			Não foi possível estimar a idade para <strong>{capitalize(data.name)}</strong>.
 		</p>
@@ -88,27 +81,21 @@
 		width: 100%;
 		transition: border-color 0.3s;
 		background-color: #ff2f2f;
-		text-align: center;
 	}
 
 	input::placeholder {
 		color: black;
-		opacity: 0.7;
-		font-style: italic;
-		text-align: center;
 	}
 
 	input:focus {
 		border-color: #0077ff;
 		outline: none;
 		border-width: 3px;
-		caret-color: transparent;
 	}
 
 	p {
 		margin-top: 1.5rem;
 		font-size: 1.2rem;
-		color: #333;
 	}
 
 	h1 {
